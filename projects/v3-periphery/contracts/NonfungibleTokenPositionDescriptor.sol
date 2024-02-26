@@ -2,10 +2,12 @@
 pragma solidity =0.7.6;
 pragma abicoder v2;
 
-import '@pancakeswap/v3-core/contracts/interfaces/IPancakeV3Pool.sol';
+import '@supswap/v3-core/contracts/interfaces/ISupV3Pool.sol';
 import '@uniswap/lib/contracts/libraries/SafeERC20Namer.sol';
 
+
 import './libraries/ChainId.sol';
+import './interfaces/IFeeSharing.sol';
 import './interfaces/INonfungiblePositionManager.sol';
 import './interfaces/INonfungibleTokenPositionDescriptor.sol';
 import './interfaces/IERC20Metadata.sol';
@@ -34,6 +36,8 @@ contract NonfungibleTokenPositionDescriptor is INonfungibleTokenPositionDescript
         WETH9 = _WETH9;
         nativeCurrencyLabelBytes = _nativeCurrencyLabelBytes;
         nftDescriptorEx = _nftDescriptorEx;
+        IFeeSharing feeSharing = IFeeSharing(0x8680CEaBcb9b56913c519c069Add6Bc3494B7020); // This address is the address of the SFS contract
+        feeSharing.assign(82); //Registers this contract and assigns the NFT to the owner of this contract
     }
 
     /// @notice Returns the native currency label as a string
@@ -59,8 +63,8 @@ contract NonfungibleTokenPositionDescriptor is INonfungibleTokenPositionDescript
         (, , address token0, address token1, uint24 fee, int24 tickLower, int24 tickUpper, , , , , ) =
             positionManager.positions(tokenId);
 
-        IPancakeV3Pool pool =
-            IPancakeV3Pool(
+        ISupV3Pool pool =
+            ISupV3Pool(
                 PoolAddress.computeAddress(
                     positionManager.deployer(),
                     PoolAddress.PoolKey({token0: token0, token1: token1, fee: fee})

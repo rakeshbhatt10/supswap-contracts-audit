@@ -11,12 +11,12 @@ import "../interfaces/IReceiver.sol";
 
 /**
  * @dev MasterChefV3KeeperV2 was designed to use in Ethereum chain.
- * Receiver will receive cake token, then upkeep for MasterChefV3.
+ * Receiver will receive sup token, then upkeep for MasterChefV3.
  */
 contract MasterChefV3KeeperV2 is KeeperCompatibleInterface, Ownable, Pausable {
     IMasterChefV3 public immutable MasterChefV3;
     IReceiver public immutable Receiver;
-    IERC20 public immutable Cake;
+    IERC20 public immutable SUP;
 
     address public register;
 
@@ -41,11 +41,11 @@ contract MasterChefV3KeeperV2 is KeeperCompatibleInterface, Ownable, Pausable {
     /// @notice constructor.
     /// @param _V3 MasterChefV3 address.
     /// @param _receiver Receiver address.
-    /// @param _cake Cake address.
-    constructor(IMasterChefV3 _V3, IReceiver _receiver, IERC20 _cake) {
+    /// @param _sup SUP address.
+    constructor(IMasterChefV3 _V3, IReceiver _receiver, IERC20 _sup) {
         MasterChefV3 = _V3;
         Receiver = _receiver;
-        Cake = _cake;
+        SUP = _sup;
     }
 
     modifier onlyRegister() {
@@ -56,9 +56,9 @@ contract MasterChefV3KeeperV2 is KeeperCompatibleInterface, Ownable, Pausable {
     //The logic is consistent with the following performUpkeep function, in order to make the code logic clearer.
     function checkUpkeep(bytes calldata) external view override returns (bool upkeepNeeded, bytes memory) {
         if (!paused()) {
-            uint256 cakeBalanceInReceiver = Cake.balanceOf(address(Receiver));
+            uint256 supBalanceInReceiver = SUP.balanceOf(address(Receiver));
             uint256 latestPeriodEndTime = MasterChefV3.latestPeriodEndTime();
-            if (cakeBalanceInReceiver > 0 && latestPeriodEndTime < block.timestamp + bufferSecond) upkeepNeeded = true;
+            if (supBalanceInReceiver > 0 && latestPeriodEndTime < block.timestamp + bufferSecond) upkeepNeeded = true;
         }
     }
 

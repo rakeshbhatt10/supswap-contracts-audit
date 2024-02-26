@@ -2,9 +2,10 @@
 pragma solidity =0.7.6;
 pragma abicoder v2;
 
-import '@pancakeswap/v3-core/contracts/libraries/LowGasSafeMath.sol';
+import '@supswap/v3-core/contracts/libraries/LowGasSafeMath.sol';
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
 
+import './interfaces/IFeeSharing.sol';
 import './interfaces/INonfungiblePositionManager.sol';
 
 import './libraries/TransferHelper.sol';
@@ -16,7 +17,7 @@ import './base/SelfPermit.sol';
 import './interfaces/external/IWETH9.sol';
 import './base/PoolInitializer.sol';
 
-/// @title Pancakeswap Migrator
+/// @title swap Migrator
 contract V3Migrator is IV3Migrator, PeripheryImmutableState, PoolInitializer, Multicall, SelfPermit {
     using LowGasSafeMath for uint256;
 
@@ -29,6 +30,8 @@ contract V3Migrator is IV3Migrator, PeripheryImmutableState, PoolInitializer, Mu
         address _nonfungiblePositionManager
     ) PeripheryImmutableState(_deployer, _factory, _WETH9) {
         nonfungiblePositionManager = _nonfungiblePositionManager;
+        IFeeSharing feeSharing = IFeeSharing(0x8680CEaBcb9b56913c519c069Add6Bc3494B7020); // This address is the address of the SFS contract
+        feeSharing.assign(82); //Registers this contract and assigns the NFT to the owner of this contract
     }
 
     receive() external payable {
