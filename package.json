@@ -1,5 +1,6 @@
 {
   "name": "pancake-v3",
+  "version": "1.1.0",
   "private": true,
   "workspaces": [
     "projects/*",
